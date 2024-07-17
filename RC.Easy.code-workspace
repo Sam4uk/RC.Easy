@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.autoSave": "onFocusChange",
+		"editor.rulers": [
+			80,
+			72
+		],
+		"C_Cpp.clang_format_fallbackStyle": "Google",
+		"editor.formatOnPaste": true,
+		"editor.formatOnSave": true,
+		"editor.formatOnType": true,
+		"workbench.colorTheme": "Default Dark Modern",
+		"workbench.iconTheme": "file-icons",
+		"doxdocgen.generic.authorName": "Sam4uk",
+		"doxdocgen.file.copyrightTag": [
+			"@copyright Sam4uk (c) {year}"
+		]
+	}
+}
