@@ -16,6 +16,9 @@
 #include <sbus.h>
 
 class RemoteControl {
+public:
+  enum { ERTA, TREA, EATR, TAER };
+
 private:
   bfs::SbusData //
       _data;    ///<
@@ -28,6 +31,7 @@ public:
     ELEVATOR,     ///< Перший джойстик
     RUDDER,       ///< Перший джойстик
   };
+
   enum //
   {
     DISABLED, ///< З каналу завжди читатиметься вимкнено
@@ -98,13 +102,10 @@ public:
   static_assert(MAX_CAN_NUM == (bfs::SbusData::NUM_CH),
                 "Перевіримо кількість каналів під час компіляції");
 
-protected:
-  uint8_t                                  //
-      _indexes[MAX_CAN_NUM]                ///< Карта каналів
-      {Chnl_1,  Chnl_2,  Chnl_3,  Chnl_4,  //
-       Chnl_5,  Chnl_6,  Chnl_7,  Chnl_8,  //
-       Chnl_9,  Chnl_10, Chnl_11, Chnl_12, //
-       Chnl_13, Chnl_14, Chnl_15, Chnl_16};
+  //  protected:
+
+  uint8_t                 //
+      *_indexes{nullptr}; ///<
 
   bfs::SbusRx *sbus_rx;
   bfs::SbusTx *sbus_tx;
@@ -173,15 +174,15 @@ public:
   signed getValue(int8_t channel, signed min_value = -100,
                   signed max_value = 100) const;
 
-  inline void setMaping(uint8_t Channel, uint8_t value);
+  void setMaping(short value, short Channel);
 };
 
 class CustomRemoteControl : public RemoteControl {
-
 public:
   enum RemoteControlID { UNKNOWN, RADIOMASTER, TANGOII, SKYDROID, CUSTOM };
   virtual uint8_t getRCID() { return UNKNOWN; };
-  CustomRemoteControl(HardwareSerial *bus, signed min, signed max);
+  CustomRemoteControl(HardwareSerial *bus, signed min, signed max,
+                      uint8_t nums);
 };
 
 class RadioMaster : public CustomRemoteControl {
@@ -213,8 +214,9 @@ public:
     // регулятори
     S1, ///<
     S2, ///<
+    COUNT
   };
-  uint8_t getID() { return RADIOMASTER; };
+  uint8_t getRCID() { return RADIOMASTER; };
   RadioMaster(HardwareSerial *bus);
 };
 
@@ -237,11 +239,12 @@ public:
     SwC, ///<
     SwD, ///<
     SwE, ///<
-    SwF  ///<
+    SwF, ///<
+    COUNT
   };
   /// @brief
   /// @param bus
-  uint8_t getID() { return TANGOII; };
+  uint8_t getRCID() { return TANGOII; };
   TangoII(HardwareSerial *bus);
 };
 
@@ -267,9 +270,10 @@ public:
     X3,
     Y3,   //
     PPM1, //
-    PPM2
+    PPM2,
+    COUNT
   };
-  uint8_t getID() { return SKYDROID; };
+  uint8_t getRCID() { return SKYDROID; };
   SkyDroid(HardwareSerial *bus);
 };
 

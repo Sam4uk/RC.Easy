@@ -17,6 +17,8 @@ RemoteControl::~RemoteControl() {
     delete sbus_rx;
   if (nullptr != sbus_tx)
     delete sbus_tx;
+  if (nullptr != _indexes)
+    delete _indexes;
 };
 
 namespace {
@@ -168,12 +170,15 @@ signed RemoteControl::getValue(int8_t channel, signed min_value,
              max_value);
 };
 
-inline void RemoteControl::setMaping(uint8_t Channel, uint8_t value) {
+void RemoteControl::setMaping(short value, short Channel) {
   _indexes[value] = Channel;
 };
 
 CustomRemoteControl::CustomRemoteControl(HardwareSerial *bus, signed min,
-                                         signed max) {
+                                         signed max, uint8_t nums) {
+  _indexes = new uint8_t[nums];
+  for (uint8_t it{}; it < nums; it++)
+    _indexes[it] = (it % RemoteControl::MAX_CAN_NUM);
   setSignalMinValue(min);
   setSignalMaxValue(max);
   sbus_rx = new bfs::SbusRx(bus);
@@ -183,10 +188,13 @@ CustomRemoteControl::CustomRemoteControl(HardwareSerial *bus, signed min,
 };
 
 RadioMaster::RadioMaster(HardwareSerial *bus)
-    : CustomRemoteControl(bus, RadioMasterSBUSmin, RadioMasterSBUSmax){};
+    : CustomRemoteControl(bus, RadioMasterSBUSmin, RadioMasterSBUSmax,
+                          RadioMaster::COUNT){};
 
 TangoII::TangoII(HardwareSerial *bus)
-    : CustomRemoteControl(bus, RadioMasterSBUSmin, RadioMasterSBUSmax){};
+    : CustomRemoteControl(bus, RadioMasterSBUSmin, RadioMasterSBUSmax,
+                          TangoII::COUNT){};
 
 SkyDroid::SkyDroid(HardwareSerial *bus)
-    : CustomRemoteControl(bus, SkyDroidSBUSmin, SkyDroidSBUSmax){};
+    : CustomRemoteControl(bus, SkyDroidSBUSmin, SkyDroidSBUSmax,
+                          SkyDroid::COUNT){};
